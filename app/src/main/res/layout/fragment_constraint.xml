@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/image_google_logo"
+        android:layout_width="75dp"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="@id/text_google"
+        app:layout_constraintEnd_toStartOf="@id/text_google"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_google"
+        app:srcCompat="@drawable/ic_logo_google" />
+
+    <TextView
+        android:id="@+id/text_google"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/image_google_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/label_id"
+        android:text="Google"
+        android:textAlignment="center"
+        android:textSize="60sp"/>
+
+    <TextView
+        android:id="@+id/label_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_google"
+        app:layout_constraintBottom_toTopOf="@id/editText_id"
+        android:text="아이디"
+        />
+
+    <EditText
+        android:id="@+id/editText_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/label_id"
+        app:layout_constraintBottom_toTopOf="@id/label_pwd"
+        android:hint="아이디"
+        android:inputType="text" />
+
+    <TextView
+        android:id="@+id/label_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/editText_id"
+        app:layout_constraintBottom_toTopOf="@id/editText_pwd"
+        android:text="비밀번호"
+        />
+
+    <EditText
+        android:id="@+id/editText_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/label_pwd"
+        app:layout_constraintBottom_toTopOf="@id/button_login"
+        android:hint="비밀번호"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/editText_pwd"
+        app:layout_constraintBottom_toTopOf="@id/button_sign_in"
+        android:text="로그인"/>
+    <Button
+        android:id="@+id/button_sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="회원가입"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
