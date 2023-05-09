@@ -1,46 +1,78 @@
 package io.github.imtotem.bcsd_assignment
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import io.github.imtotem.bcsd_assignment.databinding.ActivityMainBinding
+import io.github.imtotem.bcsd_assignment.fragment.AlertDialogFragment
+import io.github.imtotem.bcsd_assignment.fragment.FragmentFactoryImpl
+import io.github.imtotem.bcsd_assignment.fragment.RandomFragment
 
 class MainActivity : AppCompatActivity() {
-    private var count = 0
-    private lateinit var countTextView: TextView
+    private lateinit var binding: ActivityMainBinding
 
-    private val randomActivity = registerForActivityResult( StartActivityForResult() ) {
-        countTextView.text = it.data?.getIntExtra("num", 0).toString()
-        count = countTextView.text.toString().toInt()
-    }
+    private var count = 0
+
+    private lateinit var fragment: Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        val toastButton: Button = findViewById(R.id.button_toast)
+        with(binding) {
+            setCount(count)
 
-        countTextView = findViewById(R.id.count_textview)
-        val countButton: Button = findViewById(R.id.button_count)
-
-        val randomButton: Button = findViewById(R.id.button_random)
-
-        toastButton.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Toast", Toast.LENGTH_SHORT).show()
+            buttonCount.setOnClickListener {
+                setCount(++count)
+            }
         }
 
-        countButton.setOnClickListener {
-            countTextView.text = (++count).toString()
-        }
+        initFactory()
+    }
 
-        randomButton.setOnClickListener {
-            val intent = Intent(this, RandomActivity::class.java)
-            intent.putExtra("range", count)
+    private fun initFactory() {
+        supportFragmentManager.fragmentFactory = FragmentFactoryImpl(count)
 
-            randomActivity.launch(intent)
+        with(binding) {
+            buttonRandom.setOnClickListener {
+                fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, RandomFragment::class.java.name)
+
+                fragment.arguments = Bundle().apply {
+                    putBundle(RandomFragment.TAG, bundleOf("range" to count))
+                }
+
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_view_factory, fragment, RandomFragment.TAG)
+                    .commit()
+            }
+
+            buttonToast.setOnClickListener {
+                fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, AlertDialogFragment::class.java.name)
+
+                (fragment as DialogFragment).show(supportFragmentManager, AlertDialogFragment.TAG)
+            }
         }
+    }
+
+    fun onRandomClick(count: Int) {
+        setCount(count)
+    }
+
+    fun onPositiveClick() {
+        setCount(0)
+    }
+
+    private fun setCount(count: Int) {
+        this.count = count
+        binding.countTextview.text = count.toString()
+    }
+
+    fun onNeutralClick() {
+        Toast.makeText(this@MainActivity, "Toast", Toast.LENGTH_SHORT).show()
     }
 }
