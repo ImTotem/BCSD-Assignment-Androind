@@ -61,4 +61,12 @@
     <color name="md_theme_dark_surfaceTint">#A9C7FF</color>
     <color name="md_theme_dark_outlineVariant">#43474E</color>
     <color name="md_theme_dark_scrim">#000000</color>
+
+    <color name="red">#FF0000</color>
+    <color name="orange">#FF7F00</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#00FF00</color>
+    <color name="blue">#0000FF</color>
+    <color name="indigo">#4B0082</color>
+    <color name="violet">#9400D3</color>
 </resources>
