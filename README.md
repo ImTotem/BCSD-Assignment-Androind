@@ -1,7 +1,14 @@
 # BCSD-Assignment
-BCSD 실습 과제 - 9주차
+BCSD 실습 과제 - 10주차
 
-- MainActivity에 기기에 저장된 음악 파일을 리스팅한다(RecyclerView).
-  - 필수 포함 요소 : 음악의 제목, 가수, 재생 시간(hh:mm:ss)
-  - READ_EXTERNAL_STORAGE 권한 필요 : 권한 다이얼로그를 Activity Result API의 ActivityResultContracts.RequestPermission를 이용해서 구현
-  - 권한 허용이 되지 않을 경우 음악 파일을 리스팅하는 대신 권한을 허용 메시지와 권한 다이얼로그를 다시 띄우는 버튼 추가
+### 뮤직 플레이어 구현
+- 첫 화면에 MediaStore와 RecyclerView를 이용하여 기기에 저장된 음악 파일을 리스팅한다.
+- Mediaplayer 사용
+<https://developer.android.com/guide/topics/media/mediaplayer?hl=ko>
+- 첫 화면 하단에 현재 재생중인 음악을 표시한다.
+  - RecyclerView의 음악 아이템을 클릭하면 노래를 재생한다.
+  - 노래 재생은 Foreground Service에 구현한다. 알림에 노래 제목 표시
+- 첫 화면 하단의 재생중인 음악과 알림에 표시하고 있는 음악은 항상 동일해야 한다.
+- 노래를 재생하면 지워지지 않는 알림을 띄운다.
+- 알림을 클릭하면 음악 앱을 다시 표시한다.
+- 배터리 사용량을 확인하고 배터리 용량에 따라 이벤트를 체크한다.
