@@ -2,41 +2,35 @@ package io.github.imtotem.bcsd_assignment
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import android.provider.MediaStore.Audio.Media
 import android.provider.Settings
-import android.util.Log
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.imtotem.bcsd_assignment.adapter.MusicAdapter
 import io.github.imtotem.bcsd_assignment.base.BaseActivity
 import io.github.imtotem.bcsd_assignment.databinding.ActivityMainBinding
-import io.github.imtotem.bcsd_assignment.item.Music
+import io.github.imtotem.bcsd_assignment.item.MusicItem
+import io.github.imtotem.bcsd_assignment.permission.Permission
+import io.github.imtotem.bcsd_assignment.utils.Constants
+import io.github.imtotem.bcsd_assignment.utils.setDurationFormat
 
-class MainActivity : BaseActivity<ActivityMainBinding>() {
+class MainActivity : BaseActivity<ActivityMainBinding>(), MusicAdapter.ItemOnClickListener {
 
     override val layoutId: Int
         get() = R.layout.activity_main
 
-    private val requestReadPermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        if (it) {
-            adaptRecyclerView()
-            binding.requestPermissionTextView.visibility = View.INVISIBLE
-        } else {
-            binding.requestPermissionTextView.visibility = View.VISIBLE
-        }
+    companion object {
+        lateinit var permission: Permission
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStart() {
         super.onStart()
-        checkPermission()
+        permission = Permission(this)
+
+        if (permission.checkPermission(Manifest.permission.READ_MEDIA_AUDIO)) adaptRecyclerView()
     }
 
     override fun initView() {
@@ -53,34 +47,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
 
-    private fun checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(
-                    this@MainActivity, Manifest.permission.READ_MEDIA_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestReadPermission.launch(Manifest.permission.READ_MEDIA_AUDIO)
-            } else {
-                adaptRecyclerView()
-                binding.requestPermissionTextView.visibility = View.INVISIBLE
-            }
+    private fun adaptRecyclerView() {
+        val adapter = MusicAdapter(getMusicList(), this)
+        with(binding.recyclerViewContainer) {
+            this.adapter = adapter
+            this.layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
         }
     }
 
-    private fun adaptRecyclerView() {
-        val adapter = MusicAdapter(getMusicList(), this)
-        binding.recyclerViewContainer.adapter = adapter
-        binding.recyclerViewContainer.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-    }
-
-    private fun getMusicList(): MutableList<Music> {
+    private fun getMusicList(): MutableList<MusicItem> {
         val listUrl = Media.EXTERNAL_CONTENT_URI
 
-        val proj = arrayOf(Media._ID, Media.TITLE, Media.ARTIST, Media.ALBUM_ID, Media.DURATION)
+        val proj = arrayOf(
+            Media._ID,
+            Media.TITLE,
+            Media.ARTIST,
+            Media.ALBUM_ID,
+            Media.DURATION
+        )
 
         val cursor = contentResolver.query(listUrl, proj, null, null, null)
-        val musicList = mutableListOf<Music>()
+        val musicItemList = mutableListOf<MusicItem>()
         while (cursor?.moveToNext() == true) {
             with(cursor) {
                 val id = getLong(0)
@@ -89,12 +77,25 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 val albumId = getLong(3)
                 val duration = getLong(4)
 
-                val music = Music(id, title, artist, albumId, duration)
-                Log.d("music", music.toString())
-                musicList.add(music)
+                val musicItem = MusicItem(id, title, artist, albumId, setDurationFormat(duration))
+                musicItemList.add(musicItem)
             }
         }
 
-        return musicList
+        return musicItemList
     }
+
+    override fun onResumeMusic(musicItem: MusicItem) {
+        startService(createServiceIntent(Constants.MUSIC_RESUME, musicItem))
+    }
+
+    override fun onStopMusic(musicItem: MusicItem) {
+        startService(createServiceIntent(Constants.MUSIC_STOP, null))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(serviceIntent())
+    }
+
 }
