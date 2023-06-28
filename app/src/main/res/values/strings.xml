@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">BCSD-Assignment</string>
+    <string name="start">시작</string>
+    <string name="stop">중지</string>
+    <string name="cont">계속</string>
+    <string name="reset">초기화</string>
+    <string name="elapse">구간 기록</string>
+    <string name="second">%1$d초</string>
+    <string name="interval">구간기록</string>
+    <string name="section">구간</string>
+    <string name="all_time">전체 시간</string>
 </resources>
