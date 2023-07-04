@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/section"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/interval"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="01"/>
+
+        <TextView
+            android:id="@+id/interval"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/section"
+            app:layout_constraintEnd_toStartOf="@id/elapse"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="00:00.00"/>
+
+        <TextView
+            android:id="@+id/elapse"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/interval"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="00:00.00"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
