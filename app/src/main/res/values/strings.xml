@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BCSD-Assignment</string>
+    <string name="title_text_view">단어 추가</string>
+    <string name="word">단어</string>
+    <string name="mean">뜻</string>
+    <string name="add_button">추가</string>
 </resources>
