@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import io.github.imtotem.bcsd_assignment.databinding.ItemWordBinding
 import io.github.imtotem.bcsd_assignment.db.Word
 
@@ -31,6 +32,10 @@ class WordAdapter(private val context: ItemClickListener) :
             with(binding) {
                 textTextView.text = item.text
                 meanTextView.text = item.mean
+
+                Glide.with(root)
+                    .load(item.image)
+                    .into(imageView)
             }
         }
     }

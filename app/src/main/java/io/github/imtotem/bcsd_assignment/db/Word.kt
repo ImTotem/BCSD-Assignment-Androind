@@ -10,5 +10,6 @@ import kotlinx.parcelize.Parcelize
 data class Word(
     val text: String,
     val mean: String,
+    val image: String?,
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
 ): Parcelable

@@ -4,4 +4,5 @@
     <string name="word">단어</string>
     <string name="mean">뜻</string>
     <string name="add_button">추가</string>
+    <string name="add_image">이미지 추가</string>
 </resources>
