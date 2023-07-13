@@ -2,8 +2,10 @@ package io.github.imtotem.bcsd_assignment
 
 import android.content.Intent
 import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import com.bumptech.glide.Glide
 import io.github.imtotem.bcsd_assignment.base.BaseActivity
 import io.github.imtotem.bcsd_assignment.databinding.ActivityAddBinding
 import io.github.imtotem.bcsd_assignment.db.Word
@@ -22,6 +24,13 @@ class AddActivity : BaseActivity<ActivityAddBinding>() {
 
     private var previousWord: Word? = null
 
+    private val saf =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+            binding.imageView.contentDescription = it.toString()
+            Glide.with(this)
+                .load(it)
+                .into(binding.imageView)
+        }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun initView() {
@@ -35,6 +44,10 @@ class AddActivity : BaseActivity<ActivityAddBinding>() {
             with(binding) {
                 textTextInputEditText.setText(word.text)
                 meanTextInputEditText.setText(word.mean)
+                imageView.contentDescription = word.image
+                Glide.with(this@AddActivity)
+                    .load(word.image)
+                    .into(imageView)
             }
         }
     }
@@ -49,18 +62,21 @@ class AddActivity : BaseActivity<ActivityAddBinding>() {
                     viewModel.insert(
                         Word(
                             textTextInputEditText.text.toString(),
-                            meanTextInputEditText.text.toString()
-                        )
+                            meanTextInputEditText.text.toString(),
+                            imageView.contentDescription?.toString()
+                        ).apply {
+                            setResult(RESULT_OK, Intent().putExtra(Flag.ADD_WORD, this))
+                        }
                     )
                 }
-                setResult(RESULT_OK, Intent().putExtra(Flag.ADD_WORD, true))
             }
 
             FlagResult.UPDATE -> {
                 with(binding) {
                     previousWord?.copy(
                         text = textTextInputEditText.text.toString(),
-                        mean = meanTextInputEditText.text.toString()
+                        mean = meanTextInputEditText.text.toString(),
+                        image = imageView.contentDescription.toString()
                     ).apply {
                         setResult(RESULT_OK, Intent().putExtra(Flag.UPDATE_WORD, this))
                     }
@@ -69,5 +85,9 @@ class AddActivity : BaseActivity<ActivityAddBinding>() {
         }
 
         finish()
+    }
+
+    fun addImage() {
+        saf.launch("image/*")
     }
 }

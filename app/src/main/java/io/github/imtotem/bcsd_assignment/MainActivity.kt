@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import io.github.imtotem.bcsd_assignment.adapter.WordAdapter
 import io.github.imtotem.bcsd_assignment.base.BaseActivity
 import io.github.imtotem.bcsd_assignment.databinding.ActivityMainBinding
@@ -27,41 +28,41 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), WordAdapter.ItemClickL
     private lateinit var adapter: WordAdapter
     private lateinit var selectWord: Word
 
-    private val addWordResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val isAddWord = result.data?.getBooleanExtra(Flag.ADD_WORD, false) ?: false
-            if (result.resultCode == RESULT_OK && isAddWord) {
-                with(viewModel) {
-                    getLatestWord()
-                    getAll()
-                }
-            }
-        }
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private val updateWordResult =
+    private val activityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val addWord = result.data?.getParcelableExtra(Flag.ADD_WORD, Word::class.java)
             val updateWord = result.data?.getParcelableExtra(Flag.UPDATE_WORD, Word::class.java)
-            if (result.resultCode == RESULT_OK && updateWord != null) {
-                with (viewModel) {
-                    update(updateWord, adapter.currentList)
-                    setWord(updateWord)
+
+            with (viewModel) {
+                if (result.resultCode == RESULT_OK) {
+                    if (addWord != null) {
+                        getAll()
+                        getLatestWord()
+                    }
+                    if (updateWord != null) {
+                        update(updateWord, adapter.currentList)
+                        setWord(updateWord)
+                    }
+
+                    Glide.with(this@MainActivity)
+                        .load((addWord ?: updateWord)?.image)
+                        .into(binding.imageView)
                 }
             }
         }
 
     override fun initView() {
         binding.also {
-            it.activity = this
-            it.lifecycleOwner = this
+            it.activity = this@MainActivity
+            it.lifecycleOwner = this@MainActivity
             it.viewModel = viewModel
         }
         initRecyclerView()
-    }
-
-    override fun initEvent() {
         observeLiveData()
     }
+
+    override fun initEvent() {}
 
     private fun initRecyclerView() {
         viewModel.getAll()
@@ -82,15 +83,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), WordAdapter.ItemClickL
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun addWord() {
-        addWordResult.launch(Intent(this, AddActivity::class.java).also {
+        activityResult.launch(Intent(this, AddActivity::class.java).also {
             it.putExtra(Flag.FLAG, FlagResult.ADD)
         })
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun updateWord() {
-        updateWordResult.launch(Intent(this, AddActivity::class.java).also {
+        activityResult.launch(Intent(this, AddActivity::class.java).also {
             it.putExtra(Flag.WORD, viewModel.word.value)
             it.putExtra(Flag.FLAG, FlagResult.UPDATE)
         })
